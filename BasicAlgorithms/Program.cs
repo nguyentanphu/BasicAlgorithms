@@ -16,6 +16,13 @@ namespace BasicAlgorithms
 			Console.WriteLine(LongestMadeUpString(new[] { "Hey", "you", "stop", "right", "there" }));
 			Console.WriteLine(nameof(ConvertBinaryStringToInteger));
 			Console.WriteLine(ConvertBinaryStringToInteger("11"));
+			Console.WriteLine(nameof(SubArrayWithSum));
+			string subArrayWithSumLongInput = @"2
+												5 12
+												1 2 3 7 5
+												10 15
+												1 2 3 4 5 6 7 8 9 10";
+			SubArrayWithSum(subArrayWithSumLongInput);
 		}
 
 		/// <summary>
@@ -127,48 +134,59 @@ namespace BasicAlgorithms
 			return result;
 		}
 
+		/// <summary>
+		/// Input:
+		///2
+		///5 12
+		///1 2 3 7 5
+		///10 15
+		///1 2 3 4 5 6 7 8 9 10
+		///Output:
+		///2 4
+		///1 5
+		/// </summary>
+		/// <param name="input"></param>
 		static void SubArrayWithSum(string input)
 		{
 			Func<string, int[]> ConvertStringToIntArr = s =>
 			{
-				return s.Split(' ')
+				return s.Trim().Split(' ')
 					.Select(n => int.Parse(n))
 					.ToArray();
 			};
 
-			Action<int[], int> FindSumInArr = (ints, sum) =>
+			Func<int[], int, int[]> FindSumInArr = (ints, sum) =>
 				{
-					//var numDict = ints.Select((n, i) => new {n, i}).ToDictionary(x => x.n, x => x.i);
-					var currentSum = 0;
-					var hasMatchedSum = false;
 					for (int i = 0; i < ints.Length; i++)
 					{
-						currentSum += ints[i];
+						var currentSum = ints[i];
 						for (var j = i + 1; j < ints.Length; j++)
 						{
 							currentSum += ints[j];
 							if (currentSum == sum)
 							{
-								hasMatchedSum = true;
-								Console.WriteLine($"{i} {j}");
+								return new[] {i + 1, j + 1};
 							}
 						}
 					}
 
-					if (!hasMatchedSum)
-					{
-						Console.WriteLine(-1);
-					}
-
+					return new[] {-1};
 				};
-			var lines = input.Split('\n');
+			var lines = input.Split('\n').ToList();
 			var numberOfTestCases = int.Parse(lines.First());
-
-			for (int i = 1; i < numberOfTestCases; i = i + 2)
+			lines.RemoveAt(0);
+			for (int i = 0; i < numberOfTestCases; i++)
 			{
-				var conditions = ConvertStringToIntArr(lines[i]);
-				var inputArr = ConvertStringToIntArr(lines[i + 1]);
+				var conditions = ConvertStringToIntArr(lines[i * 2]);
+				var inputArr = ConvertStringToIntArr(lines[i * 2 + 1]);
 
+				var result = FindSumInArr(inputArr, conditions[1]);
+				foreach (var i1 in result)
+				{
+					Console.Write($"{i1} ");
+				}
+
+				Console.WriteLine();
 			}
 		}
 
